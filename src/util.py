@@ -112,7 +112,7 @@ def find_closest_between(values: list[float], first: float, second: float) -> tu
 
     return i1, i2
 
-def find_fall_time(time: list[float], values: list[float], window_size = 0.4, start = 0.25, end = -0.12) -> tuple[int]:
+def find_fall_time_dstd(time: list[float], values: list[float], window_size = 0.4, start = 0.25, end = -0.12) -> tuple[int]:
     '''
         Finds the fall time from the given x-axis values and y-axis values
         The approach is based on the following steps:
@@ -135,4 +135,19 @@ def find_fall_time(time: list[float], values: list[float], window_size = 0.4, st
     time, std_y = movstd(time, values, window_size=window_size)
     time, stdder_y = derivative(time, std_y)
     i1, i2 = find_closest_between(stdder_y, start, end)
+    return i1, i2
+
+def find_fall_time_std(time: list[float], y: list[float], window_size: float = 0.4, start: float = 2.5, end: float = 2.5):
+    time, std_y = movstd(time, y, window_size=window_size)
+    found_start = False
+    i1 = 0
+    i2 = 0
+    for i in range(len(time)):
+        if not found_start:
+            i1 = i
+        i2 = i
+        if std_y[i] >= start and std_y[i-1] <= start and not found_start:
+            found_start = True
+        if std_y[i] <= end and std_y[i-1] >= end and found_start:
+            break
     return i1, i2
