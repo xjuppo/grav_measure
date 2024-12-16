@@ -1,31 +1,54 @@
 import math
 
 def mean(data: list[float]) -> float:
-    """
-        Evaluates mean value from a list of float values
-    """
+    '''
+    Calculates mean of a list of values. If the list is empty
+    the number of values is considered as 1
+
+    Args:
+        data (list[float]): list of values
+    
+    Returns:
+        float: mean value
+    '''
     return float(sum(data))/float(max(1, len(data)))
 
 def std(data: list[float]) -> float:
-    """
-        Evaluates standard deviation from a list of float values
-    """
+    '''
+        Calculates standard deviation of a list of values. If the list is empty
+        the number of values is considered as 1
+
+        Args:
+            data (list[float]): list of values
+        
+        Returns:
+            float: standard deviation
+    '''
     mval = mean(data)
-    dev = [(e-mval)**2 for e in data]
-    return math.sqrt(float(sum(dev))/float(max(1, len(data))))
+    variance = float(sum([(e-mval)**2 for e in data]))/float(max(1, len(data)))
+    return math.sqrt(variance)
 
 def movstd(x: list[float], y: list[float], window_size: float = 0.4) -> tuple[list[float]]:
-    """
-        Evaluates the standard deviation of a 2-dimensional space with a moving window of size window_size
-        returns:
-         - the input x
-         - the output y
-    """
+    '''
+        Calculates the standard deviation of a sliding window for each value of y.
+        The sliding window is calculated from the value of x[i] to the index with value
+        x[i] + window_size
+
+        Args:
+            x (list[float]): x-axis values
+            y (list[float]): y-axis values
+        
+        Optional Args:
+            window_size: the size of the window (calculated on the x-axis values), default: 0.4
+        
+        Returns:
+            list[float], list[float]: returns the x list given as input and the calculated values
+    '''
     res_y: list(float) = []
     for i in range(len(x)):
         window_values = []
         j = 0
-        # Add all values contained in the window into the list
+        # Set values into the window based on the window_size parameter
         while (x[i+j]-x[i]) < window_size:
             window_values.append(y[i+j])
             j += 1
@@ -36,9 +59,16 @@ def movstd(x: list[float], y: list[float], window_size: float = 0.4) -> tuple[li
     return x, res_y
 
 def derivative(x: list[float], y: list[float]) -> tuple[list[float]]:
-    """
-        Evaluates first-order derivative of a 2-dimensional space
-    """
+    '''
+    Calculates the discrete first-order derivative of the y values
+
+    Args:
+        x (list[float]): x-axis values
+        y (list[float]): y-axis values
+    
+    Returns:
+        list[float], list[float]: returns the x list given as input and the calculated values
+    '''
     der_y: list[float] = []
     for i in range(len(x)-1):
         dy = (y[i+1] - y[i])
@@ -46,7 +76,18 @@ def derivative(x: list[float], y: list[float]) -> tuple[list[float]]:
     der_y.append(y[-1])
     return x, der_y
 
-def find_closest_between(values, first: float, second: float):
+def find_closest_between(values: list[float], first: float, second: float) -> tuple[int]:
+    '''
+    Finds the closest interval between two threshold values from the input list
+
+    Args:
+        values (list[float]): input values
+        first (float): the first threshold
+        second (float): the second threshold
+
+    Returns:
+        int, int: returns the first and last index of the found interval 
+    '''
     i1 = 0
     i2 = len(values)-1
     i = 0
@@ -72,21 +113,25 @@ def find_closest_between(values, first: float, second: float):
     return i1, i2
 
 def find_fall_time(time: list[float], values: list[float], window_size = 0.4, start = 0.25, end = -0.12) -> tuple[int]:
-    """
-        Find fall time from input time and values
+    '''
+        Finds the fall time from the given x-axis values and y-axis values
         The approach is based on the following steps:
-        - Evaluate moving-window std of input values (movstd)
-        - Evaluate first-order discrete derivate of the movstd output
+        - Calculate movstd of input values (movstd)
+        - Calculate first-order discrete derivative of the movstd output
         - Find closest range between two values (start, end)
 
-        Customizable parameters:
-        - window_size: size of window used during movstd function, default = 0.4
-        - start: start of the falling interval (positive -> increasing std, happens when the fall starts)
-        - end: end of the falling interval (negative -> decreasing std, happens when peak is reached)
+        Args:
+            time (list[float]): time-axis values
+            values (list[float]): y-axis values
+
+        Optional Args:
+            window_size (float): size of window used for movstd function, default = 0.4
+            start (float): start of the falling interval (positive -> increasing std), default = 0.25
+            end (float): end of the falling interval (negative -> decreasing std), default = -0.12
 
         returns:
-        - indices of start and end index in the time list
-    """
+            int, int: start and end indices of the falling interval 
+    '''
     time, std_y = movstd(time, values, window_size=window_size)
     time, stdder_y = derivative(time, std_y)
     i1, i2 = find_closest_between(stdder_y, start, end)

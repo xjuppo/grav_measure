@@ -1,14 +1,21 @@
 import csv
 
 def read_from_file(path: str, delimiter=";") -> dict:
-    """
+    '''
         Reads values from a csv file and tries to parse them
         to float values
-        returns:
+
+        Args:
+            path (str): path of the csv file
+
+        Optional Args:
+            delimiter: csv delimiter, default: ";"
+
+        Returns:
          dict(str, list(float)) where:
             - key is the header contained in the csv file
             - value is the values under that header
-    """
+    '''
     file = open(path, "r", newline="")
     reader = csv.reader(file, delimiter=";")
     header: list = next(reader)
