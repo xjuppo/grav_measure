@@ -44,7 +44,7 @@ def movstd(x: list[float], y: list[float], window_size: float = 0.4) -> tuple[li
         Returns:
             list[float], list[float]: returns the x list given as input and the calculated values
     '''
-    res_y: list(float) = []
+    res_y: list[float] = []
     for i in range(len(x)):
         window_values = []
         j = 0
