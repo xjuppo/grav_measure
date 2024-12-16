@@ -17,7 +17,7 @@ git clone https://github.com/xjuppo/grav_measure
 python -m venv venv
 ```
 - Attivare l'ambiente virtuale eseguendo lo script activate contenuto nella directory venv/Scripts/.
-Es. (commmand prompt):
+Es. (command prompt):
 ```
 "venv/Scripts/Activate"
 ```
