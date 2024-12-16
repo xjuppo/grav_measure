@@ -76,6 +76,26 @@ def derivative(x: list[float], y: list[float]) -> tuple[list[float]]:
     der_y.append(y[-1])
     return x, der_y
 
+def find_interval(values: list[float], first: float, second: float, first_falling=False, second_falling=False):
+    i1 = 0
+    i2 = 0
+    found = False
+    for i in range(len(values)):
+        if not found:
+            i1 = i
+        i2 = i
+        if not found:
+            if first_falling and values[i] <= first and values[i-1] >= first:
+                found = True
+            if not first_falling and values[i] >= first and values[i-1] <= first:
+                found = True
+        if found:
+            if second_falling and values[i] <= second and values[i-1] >= second:
+                break
+            if not second_falling and values[i] >= second and values[i-1] <= second:
+                break
+    return i1, i2
+
 def find_closest_between(values: list[float], first: float, second: float) -> tuple[int]:
     '''
     Finds the closest interval between two threshold values from the input list
